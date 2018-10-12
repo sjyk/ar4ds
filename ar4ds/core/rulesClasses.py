@@ -141,9 +141,9 @@ def size(dictionary):
 def defaultModalSystem(examples, exceptions):
     if size(examples) == 0:
         return 'never'
-    elif size(self.exceptions) == 0:
+    elif size(exceptions) == 0:
         return 'always'
-    elif size(self.examples) >= size(self.exceptions):
+    elif size(examples) >= size(exceptions):
         return 'usually'
     else:
         return 'occasionally'
