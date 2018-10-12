@@ -28,6 +28,9 @@ class HasProperty(object):
     def __str__(self):
         return str(self.attribute) + ' = ' + str(self.value)
 
+    def copy(self):
+        return HasProperty(self.attribute, self.value)
+
 
 class BooleanExpression(object):
     '''
@@ -63,6 +66,9 @@ class BooleanExpression(object):
         else:
             assert(False)
 
+    def copy(self):
+        return BooleanExpression(self.attribute, self.op)
+
 
 
 class Expression(object):
@@ -94,6 +100,9 @@ class Expression(object):
 
     def evalPrefix2(self,t):
         return (self.p2(t))
+
+    def copy(self):
+        return Expression(self.prop1, self.prop2, self.implicant.copy())
 
 
     def __str__(self):
@@ -127,8 +136,22 @@ class Rule(object):
     def setModal(self):
         self.modal = self.system(self.examples, self.exceptions)
 
+
+    def supports(self, t1, t2, newAttr):
+        newExpr = self.exp.copy()
+        newExpr.implicant.attribute = newAttr
+
+        #fix
+        return newExpr.eval(t1,t2) and (self.modal == 'always' or \
+                                           self.modal == 'usually')
+
+
     def __str__(self):
         return self.modal+"(" + str(self.exp) + ")"
+
+
+
+
 
 
 def size(dictionary):
