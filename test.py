@@ -15,7 +15,8 @@ raw_data = [{'a': 'New York',     'b': 'NY'},
 
 data = pd.DataFrame(raw_data, columns=['a','b'])
 
-dc = compile("implies( eq(s.b, t.b), eq(s.a, t.a))")
+dc = compile(rule="implies( eq(s.b, t.b), eq(s.a, t.a))", 
+             pre="eq(s.b, 'SFO')")
 
 print(dc[data]["always"])
 

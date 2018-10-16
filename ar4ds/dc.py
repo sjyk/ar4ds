@@ -29,7 +29,7 @@ class DC(object):
             for j in range(len(dataset)):
                 t = dataset.iloc[j]
 
-                if not self.precond(s,t):
+                if not self.precond(s,t) or i == j:
                     continue
 
                 if self.rule(s,t):
@@ -52,6 +52,9 @@ class ModalConstraint(object):
         self.exceptions = exceptions
 
     def __getitem__(self, modal):
+        
+        if len(self.rules) == 0 and len(self.exceptions) == 0:
+            return (modal == ALWAYS)
 
         if len(self.rules) == 0:
             return (modal == NEVER)

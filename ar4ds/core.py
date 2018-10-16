@@ -4,10 +4,10 @@ and logic api.
 '''
 from .dc import *
 
-def compile(rule="True", precond="True"):
+def compile(rule="True", pre="True"):
     return DC(eval('lambda s,t: ' + rule), \
-              eval('lambda s,t: ' + precond), \
-              rule, precond)
+              eval('lambda s,t: ' + pre), \
+              rule, pre)
 
 
 #binary operators over literals
