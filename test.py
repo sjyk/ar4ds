@@ -17,9 +17,8 @@ data = pd.DataFrame(raw_data, columns=['a','b'])
 
 dc = compile("iff( eq(s.b, t.b), eq(s.a, t.a))")
 
-rules, exceptions = dc[data]
+print(dc[data]["always"])
 
-print([ (data.iloc[i],data.iloc[j])  for i,j in exceptions])
 
 
 
