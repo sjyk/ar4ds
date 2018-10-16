@@ -12,9 +12,11 @@ POSSIBLE = 'possible'
 
 class DC(object):
 
-    def __init__(self, fn, strexp):
-        self.fn = fn
-        self.strexp = strexp
+    def __init__(self, rule, precond, rexp, precondexp):
+        self.rule = rule
+        self.precond = precond
+        self.rexp = rexp
+        self.precondexp = precondexp
 
     def __getitem__(self, dataset):
         
@@ -27,7 +29,10 @@ class DC(object):
             for j in range(len(dataset)):
                 t = dataset.iloc[j]
 
-                if self.fn(s,t):
+                if not self.precond(s,t):
+                    continue
+
+                if self.rule(s,t):
                     rules.append((i,j))
                 else:
                     exceptions.append((i,j))
@@ -36,7 +41,7 @@ class DC(object):
 
 
     def __str__(self):
-        return self.strexp
+        return self.rexp
 
 
 
