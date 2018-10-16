@@ -14,5 +14,6 @@ The data scientist might justify this result with a series of "soft" logical ded
 ## Requirements
 * numpy 1.15
 * pandas 0.23 
+* astor 0.7
 
 
