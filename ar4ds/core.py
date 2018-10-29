@@ -3,6 +3,7 @@ This module defines the core language
 and logic api.
 '''
 from .dc import *
+import json
 
 def compile(rule="True", pre="True"):
     return DC(eval('lambda s,t: ' + rule), \
@@ -70,3 +71,14 @@ def _check(*args):
     for arg in args:
         if not isinstance(arg, bool):
             AssertionError("The argument " + str(arg) + " is not a boolean")
+
+def _removeall(l1, l2):
+    return [l for l in l1 if not l in l2]
+
+def query(data, groupby, col, withfn):
+    all_cols = list(data.columns.values)
+    all_cols = _removeall(all_cols, groupby)
+    all_cols = _removeall(all_cols, [col])
+
+    colname = withfn + "(" + col + ")~"+ json.dumps(all_cols)
+    return data.groupby(groupby).agg({col: {colname:withfn}})
