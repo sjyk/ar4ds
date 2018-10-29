@@ -52,7 +52,7 @@ class ModalConstraint(object):
         self.exceptions = exceptions
 
     def __getitem__(self, modal):
-        
+
         if len(self.rules) == 0 and len(self.exceptions) == 0:
             return (modal == ALWAYS)
 
@@ -63,7 +63,8 @@ class ModalConstraint(object):
             if len(self.exceptions) == 0:
                 return (modal == NECESSARY) or \
                        (modal == ALWAYS) or    \
-                       (modal == POSSIBLE)
+                       (modal == POSSIBLE) or \
+                       (modal == USUALLY)
 
             if len(self.rules) > len(self.exceptions):
                 return (modal == USUALLY) or \
