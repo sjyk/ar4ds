@@ -16,7 +16,8 @@ data = pd.DataFrame(raw_data, columns=['title','id', 'salary'])
 #dc = compile(rule="implies(conj(eq(s.title, 'Manager'), eq(t.title, 'Employee')), gt(s.salary, t.salary))")
 
 #print(dc[data]["usually"])
-for rule, pre in whyie(data,'salary',0,3):
+for rule, pre in whyeq(data,'title',0,1):
+    print(rule)
     dc = compile(rule=rule, pre=pre)
     print(dc[data]["usually"])
 

@@ -1,5 +1,24 @@
 from itertools import chain, combinations
 
+def whyeq(data, attr, i, j):
+    s = data.iloc[i][attr]
+    t = data.iloc[j][attr]
+    eq = 'eq'
+
+    attrs = []
+
+    for col in data.columns.values:
+        scv = data.iloc[i][col]
+        tcv = data.iloc[j][col]
+
+        if col != attr and scv == tcv:
+            attrs.append((col, scv, tcv))
+
+    for a in _powerset(attrs):
+        if len(a) > 0:
+            yield _attr_val_to_rule(_tups_to_conj(a), attr, eq)
+
+
 
 def whyie(data, attr, i, j):
     s = data.iloc[i][attr]
