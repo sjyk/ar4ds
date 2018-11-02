@@ -20,6 +20,9 @@ dc = compile(rule="implies( eq(s.b, t.b), eq(s.a, t.a))",
 
 print(dc[data]["always"])
 
+print(is_standard_form(dc))
+
+
 
 
 
