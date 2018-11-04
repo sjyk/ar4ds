@@ -77,7 +77,7 @@ def is_standard_form(dc):
         a,b = rule[7:split_point], rule[split_point+1:]
         if "disj" in a or "xor" in a or "iff" in a or "implies" in a:
             return False
-        cnt = a.count("eq") + a.count("ne") + a.count("ge") + a.count("le")
+        cnt = b.count("eq") + b.count("ne") + b.count("ge") + b.count("le")
         if cnt != 1:
             return False
     return True
