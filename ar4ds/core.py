@@ -3,12 +3,8 @@ This module defines the core language
 and logic api.
 '''
 from .dc import *
-import re
 
 def compile(rule="True", pre="True"):
-    print(rule)
-    print(pre)
-    print(eval('lambda s,t: '+rule))
     return DC(eval('lambda s,t: ' + rule), \
               eval('lambda s,t: ' + pre), \
               rule, pre)
