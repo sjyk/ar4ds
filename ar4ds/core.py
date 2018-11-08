@@ -61,11 +61,12 @@ def _check(*args):
         if not isinstance(arg, bool):
             AssertionError("The argument " + arg + " is not a boolean")
 
+# Standard form checker
 def is_standard_form(dc):
     rule = dc.rexp
     if rule[:7] == "implies":
-        cntp = 0
-        split_point = 7
+        cntp = 0 # count of unmatched parentheses
+        split_point = 7 # the position of the comma that separates the first half and second half
         for c in rule[8:]:
             if c == "(" :
                 cntp += 1
@@ -74,8 +75,8 @@ def is_standard_form(dc):
             if cntp == 0 and c == ",":
                 break
             split_point += 1
-        a,b = rule[7:split_point], rule[split_point+1:]
-        if "disj" in a or "xor" in a or "iff" in a or "implies" in a:
+        a,b = rule[7:split_point], rule[split_point+1:] # first and second half
+        if "disj" in a or "xor" in a or "iff" in a or "implies" in a or "ne" in a or "ge" in a or "le" in a:
             return False
         cnt = b.count("eq") + b.count("ne") + b.count("ge") + b.count("le")
         if cnt != 1:
