@@ -1,29 +1,30 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[49]:
 
 
 from copy import deepcopy
 import minhash
-import loadimdbdata
+from loadimdbdata import table_pairs
 import random
 import time
 from math import factorial
 from datetime import datetime
 from scipy.special import comb
 from scipy import linspace
+from statistics import median
 import numpy as np
 import matplotlib.pyplot as plt
 
 
-# In[2]:
+# In[3]:
 
 
 ## CALCULATING CDF AND VALUE THRESHOLD GIVEN CDF ##
 
 
-# In[3]:
+# In[4]:
 
 
 # helper function for calculating cdf
@@ -35,7 +36,7 @@ def unit_step_function(a, t):
         return 1
 
 
-# In[4]:
+# In[5]:
 
 
 # given a number of random variables with uniform distribution, 
@@ -57,7 +58,7 @@ def cdf_multiple_values(n, t):
     return cdf_values
 
 
-# In[5]:
+# In[6]:
 
 
 # given a number of random variables with uniform distribution,
@@ -86,7 +87,7 @@ def find_value_threshold(n, cdf_value):
         return midpoint
 
 
-# In[6]:
+# In[7]:
 
 
 def cdf_plotter(n, multiple_n = False):
@@ -103,7 +104,7 @@ def cdf_plotter(n, multiple_n = False):
         plt.legend(loc='best')
 
 
-# In[7]:
+# In[8]:
 
 
 def threshold_value_plotter(n, cdf, multiple_n = False, multiple_cdf = False):
@@ -147,13 +148,13 @@ def threshold_value_plotter(n, cdf, multiple_n = False, multiple_cdf = False):
 
 
 
-# In[8]:
+# In[9]:
 
 
 ## PERFORMING A NATURAL JOIN USING A CLASSIC HASH JOIN ##
 
 
-# In[9]:
+# In[10]:
 
 
 # helper function for edge case where tables have no common attributes
@@ -168,7 +169,7 @@ def cartesian_product(r,s):
     return output
 
 
-# In[10]:
+# In[11]:
 
 
 # hash join function for two tables
@@ -215,7 +216,7 @@ def classic_hash_join(r, s):
         return cartesian_product(r,s)
 
 
-# In[11]:
+# In[12]:
 
 
 # wrapper function for performing hash joins on given list of tables
@@ -233,13 +234,13 @@ def natural_join(tables):
 
 
 
-# In[12]:
+# In[13]:
 
 
 ## FETCHING DATA FOR PERFORMING JOINS WITH HASHED AND RANDOM SAMPLING ##
 
 
-# In[13]:
+# In[14]:
 
 
 # helper function for normalizing hash values to [0,1]
@@ -248,7 +249,7 @@ def normalize(lower, upper, value):
     return (float(value) - float(lower)) / (float(upper) - float(lower))
 
 
-# In[14]:
+# In[15]:
 
 
 # helper function for cleaning tables after hashing join attribute values
@@ -262,13 +263,13 @@ def remove_hashsum_key(tables):
     return tables
 
 
-# In[15]:
+# In[16]:
 
 
 # function to get data for performing joins with hashed and random sampling,
 # given a list of tables
 
-def cdfjoin(tables, sampling_threshold, random_threshold=0.0, timer=0):
+def cdfjoin(tables, sampling_threshold, random_threshold=0.0):
     if len(tables) <= 1:
         return tables
     else:
@@ -299,7 +300,7 @@ def cdfjoin(tables, sampling_threshold, random_threshold=0.0, timer=0):
             hashed_table = {}
             hashed_table = {attr: minhash._min_hash([attr], table, attrs_hash_dict[attr]) for attr in table_attrs}
             for k,v in hashed_table.items():
-                norm_v = {normalize(0, minhash.NEXTPRIME, v1): v2 for v1, v2 in v.items()}
+                norm_v = {normalize(0, minhash.NEXTPRIME-1, v1): v2 for v1, v2 in v.items()}
                 norm_hashed_table[k] = norm_v
             for i in range(len(table)):
                 entry = table[i]
@@ -332,7 +333,7 @@ def cdfjoin(tables, sampling_threshold, random_threshold=0.0, timer=0):
         filtered_time = time.time() - start        
 
                 
-        #filter for all entries whose cdf <= random probability
+        #filter for all entries whose cdf > random probability
         random_tables = []
         start = time.time()
         for i in range(len(tables)):
@@ -379,92 +380,155 @@ def cdfjoin(tables, sampling_threshold, random_threshold=0.0, timer=0):
 
 
 
-# In[16]:
+# In[17]:
 
 
 ## PLOTTING DATA ON JOINED TABLE SIZE AND RUNTIME FOR HASHED AND RANDOM SAMPLING ##
 
 
-# In[17]:
+# In[80]:
 
 
 # helper function for fetching data on multiple values
 
-def plot_intermediate(tables, x, size = True):
-    values = []
-    random_threshold = random.uniform(0,1)
-    for threshold in x:
-        result = cdfjoin(tables, threshold, random_threshold)
+def get_cdfjoin_plot_data(tables, x_values, size = True, runtime = True):
+    cdfjoin_data = []
+    for threshold in x_values:
+        cdfjoin_result = cdfjoin(tables, threshold)
+        if size and runtime:
+            cdfjoin_data.append([(len(cdfjoin_result[0][0]), cdfjoin_result[0][1]),
+                                (len(cdfjoin_result[1][0]), cdfjoin_result[1][1])])
+        elif size and not runtime:
+            cdfjoin_data.append([(len(cdfjoin_result[0][0]), None), (len(cdfjoin_result[1][0]), None)])
+        elif not size and runtime:
+            cdfjoin_data.append([(None, cdfjoin_result[0][1]), (None, cdfjoin_result[1][1])])
+            
+    return cdfjoin_data
+
+
+# In[81]:
+
+
+def display_cdfjoin_plots(tables, size = True, runtime = True):
+    if not size and not runtime:
+        print("Error: Select at least one of the following types of data to display: size, runtime")
+        
+    else:
+        fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(25,8))
+        fig = plt.subplots_adjust(wspace=.5)
+        x = linspace(0, 1, 100)
+        cdfjoin_plot_data = get_cdfjoin_plot_data(tables, x, size, runtime)
+        
         if size:
-            values.append([len(result[0][0]), len(result[1][0])])
-        else:
-            values.append([result[0][1], result[1][1]])
-    return values
+            outputsize_hashed = [i[0] for [(i),(j)] in cdfjoin_plot_data]
+            outputsize_random = [j[0] for [(i),(j)] in cdfjoin_plot_data]
+            ax1.plot(x, outputsize_hashed, label='Hashed sampling')
+            ax1.plot(x, outputsize_random, label='Random sampling')
+            ax1.legend(loc='best')
+            ax1.set_xlabel('Sampling Threshold')
+            ax1.set_ylabel('Output size')
+            ax1.set_title('Output size vs. Sampling Threshold')
+        
+        if runtime:
+            runtime_hashed = [i[1] for [(i),(j)] in cdfjoin_plot_data]
+            runtime_random = [j[1] for [(i),(j)] in cdfjoin_plot_data]
+            ax2.plot(x, runtime_hashed, label='Hashed sampling')
+            ax2.plot(x, runtime_random, label='Random sampling')
+            ax2.legend(loc='best')
+            ax2.set_xlabel('Sampling Threshold')
+            ax2.set_ylabel('Runtime')
+            ax2.set_title('Runtime vs. Sampling Threshold')
+
+        plt.show()
 
 
-# In[18]:
+# In[116]:
 
 
-def outputsize_plot(tables):
-    plt.style.use('seaborn')
-    plt.rcParams['figure.figsize'] = (12, 8)
-    plt.ylabel('Output Size')
-    plt.xlabel('Sampling Probability')
-    x = linspace(0, 1, 100)
-    y = plot_intermediate(tables, x, True)
-    y1 = [i for [i, j] in y]
-    y2 = [j for [i, j] in y]
-    plt.plot(x, y1, label = 'n = Hashed Sampling')
-    plt.plot(x, y2, label = 'n = Random Sampling')
-    plt.legend(loc='best')
+def display_cdfjoin_plots_1000(tables, size = True, runtime = True):
+    if not size and not runtime:
+        print("Error: Select at least one of the following types of data to display: size, runtime")
+        
+    else:
+        x = linspace(0, 1, 100)
+        size_hashed_data_1000 = {}
+        size_random_data_1000 = {}
+        runtime_hashed_data_1000 = {}
+        runtime_random_data_1000 = {}
+        
+#         gathering data for 1000 trials
+        num_trials = 1000
+        for i in range(num_trials): 
+            trial_data = get_cdfjoin_plot_data(tables, x, size, runtime)
+            for j in range(len(x)):
+                x_value = x[j]
+                trial_values = trial_data[j]
+                if size:
+                    if x_value in size_hashed_data_1000.keys():
+                        size_hashed_data_1000[x_value].append(trial_values[0][0])
+                        size_random_data_1000[x_value].append(trial_values[1][0])
+                    else:
+                        size_hashed_data_1000[x_value] = [trial_values[0][0]]
+                        size_random_data_1000[x_value] = [trial_values[1][0]]
 
+                if runtime:
+                    if x_value in runtime_hashed_data_1000.keys():
+                        runtime_hashed_data_1000[x_value].append(trial_values[0][1])
+                        runtime_random_data_1000[x_value].append(trial_values[1][1])
+                    else:
+                        runtime_hashed_data_1000[x_value] = [trial_values[0][1]]
+                        runtime_random_data_1000[x_value] = [trial_values[1][1]]
+                    
+            
+#         organizing data for each trial by x-value (sampling threshold)
+        fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(25,8))
+        fig = plt.subplots_adjust(wspace=.5)
+        
+        if size:
+            size_hashed_data = []
+            size_random_data = []
+            for k,v in size_hashed_data_1000.items():
+                size_hashed_data.append(median(v))
+            for k,v in size_random_data_1000.items():
+                size_random_data.append(median(v))
+            ax1.plot(x, size_hashed_data, label='Hashed sampling')
+            ax1.plot(x, size_random_data, label='Random sampling')
+            ax1.legend(loc='best')
+            ax1.set_xlabel('Sampling Threshold')
+            ax1.set_ylabel('Output size')
+            ax1.set_title('Output size vs. Sampling Threshold')
+                
+                
+        if runtime:
+            runtime_hashed_data = []
+            runtime_random_data = []
+            for k,v in runtime_hashed_data_1000.items():
+                runtime_hashed_data.append(median(v))
+            for k,v in runtime_random_data_1000.items():
+                runtime_random_data.append(median(v))
+            ax2.plot(x, runtime_hashed_data, label='Hashed sampling')
+            ax2.plot(x, runtime_random_data, label='Random sampling')
+            ax2.legend(loc='best')
+            ax2.set_xlabel('Sampling Threshold')
+            ax2.set_ylabel('Runtime')
+            ax2.set_title('Runtime vs. Sampling Threshold')
 
-# In[19]:
-
-
-def runtime_plot(tables):
-    plt.style.use('seaborn')
-    plt.rcParams['figure.figsize'] = (12, 8)
-    plt.ylabel('Runtime')
-    plt.xlabel('Sampling Probability')
-    x = linspace(0, 1, 100)
-    y = plot_intermediate(tables, x, False)
-    y1 = [i for [i, j] in y]
-    y2 = [j for [i, j] in y]
-    plt.plot(x, y1, label = 'n = Hashed Sampling')
-    plt.plot(x, y2, label = 'n = Random Sampling')
-    plt.legend(loc='best')
+        plt.show()
 
 
 # In[ ]:
 
 
+#display_cdfjoin_plots_1000(table_pairs[12], True, True)
 
 
-
-# In[20]:
-
-
-## SAMPLE DATA TO USE ##
+# In[ ]:
 
 
-# In[21]:
+display_cdfjoin_plots_1000(table_pairs[12], True, True)
 
 
-table_pairs = loadimdbdata.create_tables_to_join()
-
-joined_table_indices = []
-for i in range(len(table_pairs)):
-    table_1 = table_pairs[i][0]
-    table_2 = table_pairs[i][1]
-    if len(natural_join([deepcopy(table_1), deepcopy(table_2)])) != 0:
-        joined_table_indices.append(i)
-
-
-# In[22]:
-
-
-# runtime_plot(table_pairs[4])
+# In[3
 
 
 
