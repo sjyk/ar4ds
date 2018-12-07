@@ -80,5 +80,13 @@ def query(data, groupby, col, withfn):
     all_cols = _removeall(all_cols, groupby)
     all_cols = _removeall(all_cols, [col])
 
-    colname = withfn + "(" + col + ")~"+ json.dumps(all_cols)
-    return data.groupby(groupby).agg({col: {colname:withfn}})
+    output = data.groupby(groupby).agg({col: withfn}).reset_index()
+    
+    provenance = {'data': data,
+                  'agg': withfn,
+                  'groupby': groupby,
+                  'aggcol': col,
+                  'hidden': all_cols}
+
+    return output, provenance
+
