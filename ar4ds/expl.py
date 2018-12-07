@@ -20,12 +20,9 @@ def _rolldown(data, col, perm, agg, dc, modal):
         except:
             truth = None
 
-        results.append((output, truth))
+        results.append((output, truth, truth[modal]))
 
-        if truth != None or not truth[modal]:
-            return results, True
-
-    return results, False
+    return results
 
 
 

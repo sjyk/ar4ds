@@ -14,7 +14,7 @@ raw_data = [{'title': 'Employee', 'id':1 , 'salary': 60.0},
 
 data = pd.DataFrame(raw_data, columns=['title','id', 'salary'])
 df, prov = query(data, groupby=["id"], col="salary", withfn="mean")
-print(prov)
+#print(prov)
 dc = compile("implies(conj( eq(s.id,'Employee'), eq(t.id,'Manager')), gt(t.salary, s.salary))")
 print(rolldown(prov, dc, "usually"))
 
