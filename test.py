@@ -16,7 +16,7 @@ data = pd.DataFrame(raw_data, columns=['title','branch', 'salary'])
 df, prov = query(data, groupby=["branch"], col="salary", withfn="mean")
 #print(df)
 dc = compile("implies(conj( eq(s.branch,'NY'), eq(t.branch,'SF')), gt(s.salary, t.salary))", pre="conj( eq(s.branch,'NY'), eq(t.branch,'SF'))")
-print(rolldown(prov, dc, "always"))
+print(rolldown(prov, dc, "0.0"))
 
 #dc = compile("implies(conj( eq(s.title,'Employee'), eq(t.title,'Manager')), gt(t.salary, s.salary))")
 #print(dc[data]["usually"], dc[df]["usually"])

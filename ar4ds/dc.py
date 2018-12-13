@@ -59,7 +59,21 @@ class ModalConstraint(object):
         self.rules = rules
         self.exceptions = exceptions
 
+    def __getitem_frac__(self, t):
+        if len(self.rules) == 0 and len(self.exceptions) == 0:
+            return False
+
+        else:
+            frac = (len(self.rules) + 0.0) /(len(self.rules) + len(self.exceptions))
+            return (frac >= t)
+
     def __getitem__(self, modal):
+
+        try:
+            f = float(modal)
+            return self.__getitem_frac__(f)
+        except:
+            pass
 
         if len(self.rules) == 0 and len(self.exceptions) == 0:
             return (modal == ALWAYS)
