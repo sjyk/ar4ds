@@ -2,11 +2,14 @@ import pandas as pd
 from itertools import combinations
 from ar4ds.core import *
 
-def rolldown(prov, dc, modal):
+def assertDC(prov, dc, modal=1.0):
+    return (validateDC(prov, dc, modal) == None)
+
+def validateDC(prov, dc, modal=1.0):
 
     for k in range(1,len(prov['hidden'])+1):
 
-        results = []
+        results = None
         for comb in combinations(prov['hidden'], k):
             
             comb = list(comb)
@@ -17,18 +20,21 @@ def rolldown(prov, dc, modal):
                      prov['agg'],
                      dc, modal)
 
-            if not test[2]:
-                results.append(test)
+            if not test[2] and results == None:
+                results = test
+            elif not test[2] and \
+                    len(results.exceptions) < len(test[1].exceptions):
+                results = test
 
-        if len(results) >= 1:
+        if results != None:
             return results
 
-    return []
+    return None
 
 def _eval(data, col, perm, agg, dc, modal):
-    output, _ = query(data, groupby=perm, col=col, withfn=agg)
+    output, prov = query(data, groupby=perm, col=col, withfn=agg)
     truth = dc[output]
-    return (data, truth, truth[modal])
+    return (prov, truth, truth[modal])
 
 
 
