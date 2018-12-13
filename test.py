@@ -19,7 +19,9 @@ df, prov = query(data, groupby=["branch"], col="salary", withfn="mean")
 dc = compile("implies(conj( eq(s.branch,'NY'), eq(t.branch,'SF')), gt(s.salary, t.salary))", pre="conj( eq(s.branch,'NY'), eq(t.branch,'SF'))")
 
 import ast, asttokens 
-t = isImplicationExpression("implies(conj( eq(s.branch,'NY'), eq(t.branch,'SF')), gt(s.salary, t.salary))")
+t = getExpression("implies(conj( eq(s.branch,'NY'), eq(t.branch,'SF')), gt(s.salary, t.salary))")
+print(t)
+print(getArity("eq(s.branch,'NY')"))
 print(splitBinary("implies(conj( eq(s.branch,'NY'), eq(t.branch,'SF')), gt(s.salary, t.salary))"))
         
 #print(validateDC(prov, dc, 1.0))

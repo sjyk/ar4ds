@@ -11,10 +11,24 @@ def toAST(code):
 def toSource(ast):
     return astor.to_source(ast)
 
-def isImplicationExpression(code):
-    tree = toAST(code)
-    return (tree.body[0].value.func.id == "implies")
 
+def getExpression(code):
+    tree = toAST(code)
+    try:
+        return tree.body[0].value.func.id
+    except:
+        return None
+
+def getArity(code):
+    tree = toAST(code)
+    ids = set()
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Name):
+            if node.id in ('s', 't'): 
+                ids.add(node.id)
+
+    return len(ids)
 
 def splitBinary(code):
     atok = asttokens.ASTTokens(code, parse=True)
