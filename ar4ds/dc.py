@@ -20,8 +20,8 @@ class DC(object):
 
     def __getitem__(self, dataset):
         
-        rules = []
-        exceptions = []
+        rules = set(range(len(dataset)))
+        exceptions = set()
 
         for i in range(len(dataset)):
             s = dataset.iloc[i]
@@ -30,14 +30,22 @@ class DC(object):
                 t = dataset.iloc[j]
 
                 if not self.precond(s,t) or i == j:
+                    
+                    if (i in rules):
+                        rules.remove(i)
+                    
+                    if (j in rules):
+                        rules.remove(j)
+
                     continue
 
                 if self.rule(s,t):
-                    rules.append((i,j))
+                    pass
                 else:
-                    exceptions.append((i,j))
+                    exceptions.add(i)
+                    exceptions.add(j)
 
-        return ModalConstraint(rules, exceptions)
+        return ModalConstraint(rules.difference(exceptions), exceptions)
 
 
     def __str__(self):

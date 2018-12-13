@@ -1,28 +1,36 @@
 import pandas as pd
+from itertools import combinations
 from ar4ds.core import *
 
 def rolldown(prov, dc, modal):
-    return _rolldown(prov['data'], 
+
+    for k in range(1,len(prov['hidden'])+1):
+
+        results = []
+        for comb in combinations(prov['hidden'], k):
+            
+            comb = list(comb)
+
+            test =   _eval(prov['data'], 
                      prov['aggcol'], 
-                     prov['groupby']+prov['hidden'], 
+                     prov['groupby']+comb, 
                      prov['agg'],
                      dc, modal)
 
-def _rolldown(data, col, perm, agg, dc, modal):
-    results = []
+            if not test[2]:
+                results.append(test)
 
-    for i,j in enumerate(perm):
-        print(col)
-        output, _ = query(data, groupby=perm[0:i+1], col=col, withfn=agg)
-        
-        try:
-            truth = dc[output]
-        except:
-            truth = None
+        if len(results) >= 1:
+            return results
 
-        results.append((output, truth, truth[modal]))
+    return []
 
-    return results
+def _eval(data, col, perm, agg, dc, modal):
+    output, _ = query(data, groupby=perm, col=col, withfn=agg)
+    truth = dc[output]
+    return (data, truth, truth[modal])
+
+
 
 
 
