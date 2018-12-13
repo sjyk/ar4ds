@@ -48,6 +48,7 @@ class DC(object):
         return ModalConstraint(rules.difference(exceptions), exceptions)
 
 
+
     def __str__(self):
         return self.rexp
 

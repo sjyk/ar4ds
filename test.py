@@ -1,6 +1,7 @@
 import pandas as pd
 from ar4ds.core import *
 from ar4ds.expl import *
+from ar4ds.opt import *
 
 raw_data = [{'title': 'Employee', 'branch':'SF' , 'salary': 60.0}, 
          {'title': 'Employee' , 'branch': 'SF', 'salary': 60.0},
@@ -16,7 +17,12 @@ data = pd.DataFrame(raw_data, columns=['title','branch', 'salary'])
 df, prov = query(data, groupby=["branch"], col="salary", withfn="mean")
 #print(df)
 dc = compile("implies(conj( eq(s.branch,'NY'), eq(t.branch,'SF')), gt(s.salary, t.salary))", pre="conj( eq(s.branch,'NY'), eq(t.branch,'SF'))")
-print(validateDC(prov, dc, 1.0))
+
+import ast, asttokens 
+t = isImplicationExpression("implies(conj( eq(s.branch,'NY'), eq(t.branch,'SF')), gt(s.salary, t.salary))")
+print(splitBinary("implies(conj( eq(s.branch,'NY'), eq(t.branch,'SF')), gt(s.salary, t.salary))"))
+        
+#print(validateDC(prov, dc, 1.0))
 
 #dc = compile("implies(conj( eq(s.title,'Employee'), eq(t.title,'Manager')), gt(t.salary, s.salary))")
 #print(dc[data]["usually"], dc[df]["usually"])

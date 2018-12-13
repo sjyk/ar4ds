@@ -10,7 +10,6 @@ def compile(rule="True", pre="True"):
               eval('lambda s,t: ' + pre), \
               rule, pre)
 
-
 #binary operators over literals
 def eq(s,t):
     return (s == t)
