@@ -2,6 +2,7 @@
 This class defines a denial constraint and 
 some basic scaffolding for future inference
 '''
+from .core import *
 
 NEVER = 'never'
 OCCASIONALLY = 'occasionally'
@@ -12,24 +13,74 @@ POSSIBLE = 'possible'
 
 class DC(object):
 
-    def __init__(self, rule, precond, rexp, precondexp):
-        self.rule = rule
-        self.precond = precond
+    def __init__(self, rexp, optimizer):
+        self.rule = eval('lambda s,t: ' + rexp)
         self.rexp = rexp
-        self.precondexp = precondexp
+        self.optimizer = optimizer
 
-    def __getitem__(self, dataset):
+
+    def getRange(self, dataset, conds, left):
+        ranges = set()
+
+        if len(conds) == 0:
+            return set(range(len(dataset)))
+
+        for i in range(len(dataset)):
+
+            for c in conds:
+
+                if left:
+                    exp = eval('lambda s: ' + c)
+                else:
+                    exp = eval('lambda t: ' + c)
+
+                if exp(dataset.iloc[i]):
+                    ranges.add(i)
+
+        return ranges
+
+
+    def explainPlan(self, dataset):
+        opt = self.optimizer(dataset)
+        plan = opt.plan(self.rexp)
+        precond = eval('lambda s,t: ' + plan['pre'])
         
         rules = set(range(len(dataset)))
         exceptions = set()
 
-        for i in range(len(dataset)):
+        if len(plan['s']) > 0:
+            print("Pushing down:\n\t",plan['s'])
+
+        if len(plan['t']) > 0:
+            print("Pushing down:\n\t", plan['t'])
+
+        if len(plan['pre']) > 0:
+            print("Implication Left Prune:\n\t", plan['pre'])
+
+        if len(plan['st']) > 0:
+            print("Hash Join on:\n\t", plan['st'])
+        else:
+            print("Nested Loop Join:\n\t", "S x T\n\t\t")
+
+    def __getitem__(self, dataset):
+
+        opt = self.optimizer(dataset)
+        plan = opt.plan(self.rexp)
+        precond = eval('lambda s,t: ' + plan['pre'])
+        
+        rules = set(range(len(dataset)))
+        exceptions = set()
+
+        lrange = self.getRange(dataset, plan['s'], True)
+        rrange = self.getRange(dataset, plan['t'], False)
+
+        for i in lrange:
             s = dataset.iloc[i]
             
-            for j in range(len(dataset)):
+            for j in rrange:
                 t = dataset.iloc[j]
 
-                if not self.precond(s,t) or i == j:
+                if not precond(s,t) or i == j:
                     
                     if (i in rules):
                         rules.remove(i)

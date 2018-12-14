@@ -2,13 +2,7 @@
 This module defines the core language
 and logic api.
 '''
-from .dc import *
 import json
-
-def compile(rule="True", pre="True"):
-    return DC(eval('lambda s,t: ' + rule), \
-              eval('lambda s,t: ' + pre), \
-              rule, pre)
 
 #binary operators over literals
 def eq(s,t):

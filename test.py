@@ -3,6 +3,8 @@ from ar4ds.core import *
 from ar4ds.expl import *
 from ar4ds.opt import *
 
+from ar4ds.cascades import CascadesQueryOptimizer
+
 raw_data = [{'title': 'Employee', 'branch':'SF' , 'salary': 60.0}, 
          {'title': 'Employee' , 'branch': 'SF', 'salary': 60.0},
          {'title': 'Employee', 'branch': 'NY' , 'salary': 50.0},
@@ -16,15 +18,20 @@ raw_data = [{'title': 'Employee', 'branch':'SF' , 'salary': 60.0},
 data = pd.DataFrame(raw_data, columns=['title','branch', 'salary'])
 df, prov = query(data, groupby=["branch"], col="salary", withfn="mean")
 #print(df)
-dc = compile("implies(conj( eq(s.branch,'NY'), eq(t.branch,'SF')), gt(s.salary, t.salary))", pre="conj( eq(s.branch,'NY'), eq(t.branch,'SF'))")
+#c = CascadesQueryOptimizer(None, None)
+dc = compile("implies(conj( eq(s.branch,'NY'), eq(t.branch,'SF')), gt(s.salary, t.salary))", CascadesQueryOptimizer)
+dc.explainPlan(df)
 
 import ast, asttokens 
 t = getExpression("implies(conj( eq(s.branch,'NY'), eq(t.branch,'SF')), gt(s.salary, t.salary))")
 print(t)
 print(getArity("eq(s.branch,'NY')"))
 print(splitBinary("implies(conj( eq(s.branch,'NY'), eq(t.branch,'SF')), gt(s.salary, t.salary))"))
-        
-#print(validateDC(prov, dc, 1.0))
+
+#c = CascadesQueryOptimizer(None, None)
+#print(c.plan("implies(conj( eq(s.branch,'NY'), eq(t.branch,'SF')), gt(s.salary, t.salary))"))        
+
+#print(validateDC(prov, dc, 0.0))
 
 #dc = compile("implies(conj( eq(s.title,'Employee'), eq(t.title,'Manager')), gt(t.salary, s.salary))")
 #print(dc[data]["usually"], dc[df]["usually"])

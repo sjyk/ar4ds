@@ -1,6 +1,13 @@
 import pandas as pd
 from itertools import combinations
+
 from ar4ds.core import *
+from .opt import *
+from .dc import *
+
+
+def compile(rule="True", optimizer=QueryOptimizer):
+    return DC(rule, optimizer)
 
 def assertDC(prov, dc, modal=1.0):
     return (validateDC(prov, dc, modal) == None)

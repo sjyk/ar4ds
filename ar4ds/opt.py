@@ -11,13 +11,13 @@ def toAST(code):
 def toSource(ast):
     return astor.to_source(ast)
 
-
 def getExpression(code):
     tree = toAST(code)
     try:
         return tree.body[0].value.func.id
     except:
         return None
+
 
 def getArity(code):
     tree = toAST(code)
@@ -28,7 +28,7 @@ def getArity(code):
             if node.id in ('s', 't'): 
                 ids.add(node.id)
 
-    return len(ids)
+    return ids
 
 def splitBinary(code):
     atok = asttokens.ASTTokens(code, parse=True)
@@ -39,4 +39,23 @@ def splitBinary(code):
             calls.append(atok.get_text(node))
 
     return calls[1], calls[2]
+
+
+class QueryOptimizer(object):
+    def __init__(self, data):
+        self.data = data
+
+    def getPrecondition(self, code):
+        pre = "True"
+        expr = getExpression(code)
+
+        if expr == 'implies':
+            pre, _ = splitBinary(code) 
+
+        return pre
+
+    def plan(self, code):
+        return {'s':[], 't':[], 'st':[], 'pre': self.getPrecondition(code)}
+
+
 
