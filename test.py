@@ -1,6 +1,6 @@
 import pandas as pd
 from ar4ds.core import *
-from ar4ds.api.query import *
+from ar4ds.api import *
 from ar4ds.opt import *
 
 from ar4ds.cascades import CascadesQueryOptimizer

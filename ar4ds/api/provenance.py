@@ -14,7 +14,7 @@ class SchemaProvenance(object):
             hidden (List[String]): The columns aggregated out
     """
 
-    def __init__(self, data, withfn, groupby, col)
+    def __init__(self, data, withfn, groupby, col):
         """Constructor
 
         data (pd.DataFrame): The original dataframe,
@@ -22,7 +22,7 @@ class SchemaProvenance(object):
             groupby (List[String]): The list of group by columns,
             col (String): The aggregation column,
             hidden (List[String]): The columns aggregated out
-            
+
         """
 
         all_cols = list(data.columns.values)
@@ -34,5 +34,5 @@ class SchemaProvenance(object):
         self.groupby = groupby
         self.col = col
 
-    def _removeall(self. l1, l2):
+    def _removeall(self, l1, l2):
         return [l for l in l1 if not l in l2]
