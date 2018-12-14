@@ -38,7 +38,7 @@ class DC(object):
     our application only considers boolean functiosn that start with implies or iff
     (convince yourself deduction is pointless if it wasn't this).
 
-    DC's are lazy in the sense that the are not realized until. You apply them
+    DC's are lazy in the sense that the are not realized until you apply them
     to a dataset. We allow for both static and dynamic optimizations.
 
     Example usage
