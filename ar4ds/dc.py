@@ -161,12 +161,36 @@ class DC(object):
 
 
 class ModalConstraint(object):
-    """
+    """A ModalConstraint describes a DC that has been applied to data
+
+     Modal logic is a type of formal logic from the 1960s that extends 
+     classical logic to include operators expressing modality. A modal is 
+     a word that qualifies a statement (such as "usually")--more 
+     specifically, quantifies the fraction of possible worlds a 
+     statement is true.
+
+     Our ModalConstraint objects index records that support and violate a 
+     specific dc in two attributes (rules and exceptions).
+
+     Example usage:
+
+     >>out = data[data]
+     >>out[0.5] #are at least half of the tuples in satisfaction
+     >>out["usually"] #^ same as above
+     >>out[1.0] #are all the tuples in satisfaction
+     >>out["always"] #^ same as above
     """
 
     def __init__(self, rules, exceptions):
+        """Constructor
+
+        Args:
+            rules (Set[Int]): A set of row index that satisfy the dc
+            exceptions (Set[Int]): A set of indexes that violate the dc
+        """
         self.rules = rules
         self.exceptions = exceptions
+
 
     def __getitem_frac__(self, t):
         if len(self.rules) == 0 and len(self.exceptions) == 0:
@@ -176,7 +200,11 @@ class ModalConstraint(object):
             frac = (len(self.rules) + 0.0) /(len(self.rules) + len(self.exceptions))
             return (frac >= t)
 
+
     def __getitem__(self, modal):
+        """
+        Syntactic sugar to make usage easy.
+        """
 
         try:
             f = float(modal)
