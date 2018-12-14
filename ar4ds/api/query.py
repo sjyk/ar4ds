@@ -13,6 +13,8 @@ Attributes:
 from ar4ds.opt import *
 from ar4ds.dc import *
 
+from .provenance import SchemaProvenance
+
 import pandas as pd
 from itertools import combinations
 
@@ -37,22 +39,9 @@ def query(data, groupby, col, withfn):
         provenance: A dictionary describing the logical provenance
     """
 
-    def _removeall(l1, l2):
-        return [l for l in l1 if not l in l2]
-
-    all_cols = list(data.columns.values)
-    all_cols = _removeall(all_cols, groupby)
-    all_cols = _removeall(all_cols, [col])
-
     output = data.groupby(groupby).agg({col: withfn}).reset_index()
     
-    provenance = {'data': data,
-                  'agg': withfn,
-                  'groupby': groupby,
-                  'aggcol': col,
-                  'hidden': all_cols}
-
-    return output, provenance
+    return output, SchemaProvenance(data, withfn, groupby, col)
 
 
 def compile(rule="True", optimizer=QueryOptimizer):
@@ -63,21 +52,19 @@ def assertDC(prov, dc, modal=1.0):
     return (validateDC(prov, dc, modal) == None)
 
 
-
-
 def validateDC(prov, dc, modal=1.0):
 
-    for k in range(1,len(prov['hidden'])+1):
+    for k in range(1,len(prov.hidden)+1):
 
         results = None
-        for comb in combinations(prov['hidden'], k):
+        for comb in combinations(prov.hidden, k):
             
             comb = list(comb)
 
-            test =   _eval(prov['data'], 
-                     prov['aggcol'], 
-                     prov['groupby']+comb, 
-                     prov['agg'],
+            test =   _eval(prov.data, 
+                     prov.col, 
+                     prov.groupby+comb, 
+                     prov.withfn,
                      dc, modal)
 
             if not test[2] and results == None:
