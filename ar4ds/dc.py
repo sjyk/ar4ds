@@ -1,9 +1,19 @@
-'''
-This class defines a denial constraint and 
-some basic scaffolding for future inference
-'''
+# -*- coding: utf-8 -*-
+"""Represents the optimized Denial Constraint objects and their evaluation.
+
+This module does most of the work in this package right now. It creates and 
+optimizes the DC expressions. That part is a little clunky really only supports
+pushdown and hash join optimizations but we can do more complex re-writes at a 
+higher level.
+
+DCs are also lazy--hence the two classes in the module.
+"""
+
 from .core import *
 
+
+#There are some human readable modal logic constants
+#SK wants to have an undergrad build and NLP interface
 NEVER = 'never'
 OCCASIONALLY = 'occasionally'
 USUALLY = 'usually'
@@ -11,7 +21,11 @@ ALWAYS = 'always'
 NECESSARY = 'necessary'
 POSSIBLE = 'possible'
 
+
 class DC(object):
+    """
+    """
+
 
     def __init__(self, rexp, optimizer):
         self.rule = eval('lambda s,t: ' + rexp)
@@ -102,6 +116,10 @@ class DC(object):
 
     def __str__(self):
         return self.rexp
+
+
+
+
 
 
 

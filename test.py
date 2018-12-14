@@ -3,7 +3,7 @@ from ar4ds.core import *
 from ar4ds.api import *
 from ar4ds.opt import *
 
-from ar4ds.cascades import CascadesQueryOptimizer
+from ar4ds.opt.cascades import CascadesQueryOptimizer
 
 raw_data = [{'title': 'Employee', 'branch':'SF' , 'salary': 60.0}, 
          {'title': 'Employee' , 'branch': 'SF', 'salary': 60.0},
