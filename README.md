@@ -2,7 +2,11 @@
 Automated Reasoning For Data Science
 
 ## Contributors and Acknowledgements
-This project is maintained by the University of Chicago Database Group under P.I Sanjay Krishnan. This work is in part supported by a generous equipment grant from NVIDIA.
+This project is maintained by the University of Chicago Database Group under P.I Sanjay Krishnan. This work is in part supported by a generous equipment grant from NVIDIA. The following students have contributed to the project.
+
+* Amy Zeng
+* Xifan Yu
+* Alex Zhao
 
 ## Motivation
 When is a database query result suprising? Data scientists implicitly ground quantitative results from data in qualitative models of the world.
