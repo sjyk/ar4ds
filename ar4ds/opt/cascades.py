@@ -1,6 +1,30 @@
+# -*- coding: utf-8 -*-
+"""
+Our default query optimizer is based on the Cascades
+optimizer. 
+
+Graefe, Goetz. "The cascades framework for query optimization." 
+IEEE Data Eng. Bull. 18.3 (1995): 19-29.
+
+The cascades query optimizer is a top-down query optimizer that 
+is based on transformations. We adopt the same architecture for 
+ar4ds.
+"""
+
 from .opt import *
 
+
 class CascadesParseOptState(object):
+    """Defines a helper object that holds the optimization state
+
+    Attributes:
+        expr (String): The function call
+        arity (Set[String]): {}, {s}, {t}, {s,t}
+        n_arity (int): len(arity)
+        s (List[String]): list of s push downs
+        t (List[String]): list of t push downs
+        st (List[String]): list join conditions
+    """
 
     def __init__(self, code, s,t, st):
         self.expr = getExpression(code)
@@ -14,9 +38,23 @@ class CascadesParseOptState(object):
 
 
 class CascadesQueryOptimizer(QueryOptimizer):
+    """Defines the Cascades query optimizer for DC evaluation
+
+    Basic structure:
+    * The framework executes a list of rules that transform the query
+    by s,t,st pushdowns
+
+    * Rules are allowed to be recursive (all pushdowns on subqery a or b)
+    """
 
     def __init__(self, data):
 
+        """List of rules. 
+
+        Each rule is a tuple (a,b), where a is a boolean function
+        of CascadesParseOptState, and b appends a transformation
+        to s,t,st lists.
+        """
         self.rules = [ (self._indivisible_expr, self.break_pth),\
                        (self._unitary_expr, self.base_pth),\
                        (self._divisible_expr, self.recurse_pth)]
@@ -59,6 +97,7 @@ class CascadesQueryOptimizer(QueryOptimizer):
 
         state = CascadesParseOptState(code, s, t, st)
 
+        #rolling out the rules
         for rule, opt in self.rules:
             if rule(state):
                 opt(state)
