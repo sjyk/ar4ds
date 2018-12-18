@@ -82,6 +82,7 @@ def validateDC(prov, dc, modal=1.0):
         None if valid, otherwise
 
         prov (ar4ds.api.provenance): Provenance of the failing subgroup query
+        output (pd.DataFrame): Failed subgroup query
         truth (ar4ds.dc.ModalConstraint): Particular constraint that violated
   """
 
@@ -89,7 +90,7 @@ def validateDC(prov, dc, modal=1.0):
   def _eval(data, col, perm, agg, dc, modal):
     output, prov = query(data, groupby=perm, col=col, withfn=agg)
     truth = dc[output]
-    return (prov, truth, truth[modal])
+    return (prov, output, truth, truth[modal])
 
 
   #Executes the BFS
@@ -106,14 +107,14 @@ def validateDC(prov, dc, modal=1.0):
                          prov.withfn,
                          dc, modal)
 
-          if not test[2] and results == None:
+          if not test[3] and results == None:
               results = test
-          elif not test[2] and \
+          elif not test[3] and \
                   len(results.exceptions) < len(test[1].exceptions):
               results = test
 
       if results != None:
-          return results[0], results[1]
+          return results[0], results[1], results[2]
 
   return None
 

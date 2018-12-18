@@ -87,25 +87,25 @@ class DC(object):
 
         for i in lrange:
             s = dataset.iloc[i]
+
+            precond_fail = True
             
             for j in rrange:
                 t = dataset.iloc[j]
 
                 if not precond(s,t) or i == j:
-                    
-                    if (i in rules):
-                        rules.remove(i)
-                    
-                    if (j in rules):
-                        rules.remove(j)
-
                     continue
+                elif precond(s,t):
+                    precond_fail = False
 
                 if self.rule(s,t):
                     pass
                 else:
                     exceptions.add(i)
                     exceptions.add(j)
+
+            if precond_fail and (i in rules):
+                rules.remove(i)
 
         return ModalConstraint(rules.difference(exceptions), exceptions)
 

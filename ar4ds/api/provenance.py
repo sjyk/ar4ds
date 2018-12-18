@@ -33,6 +33,7 @@ class SchemaProvenance(object):
         self.hidden = all_cols
         self.groupby = groupby
         self.col = col
+        self.withfn = withfn
 
     def _removeall(self, l1, l2):
         return [l for l in l1 if not l in l2]
