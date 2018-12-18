@@ -57,6 +57,7 @@ class CascadesQueryOptimizer(QueryOptimizer):
         """
         self.rules = [ (self._indivisible_expr, self.break_pth),\
                        (self._unitary_expr, self.base_pth),\
+                       (self._eq_expr, self.st_pth),
                        (self._divisible_expr, self.recurse_pth)]
 
         super().__init__(data)
@@ -65,7 +66,11 @@ class CascadesQueryOptimizer(QueryOptimizer):
         return (state.n_arity == 1)
 
     def _indivisible_expr(self, state):
-        return (state.expr != 'conj' and state.n_arity == 2)
+        return ( (state.expr != 'conj' and state.expr != 'eq')  \
+                 and state.n_arity == 2)
+
+    def _eq_expr(self, state):
+        return (state.expr == 'eq' and state.n_arity == 2)
 
     def _divisible_expr(self, state):
         return (state.expr == 'conj' and state.n_arity == 2)
@@ -80,6 +85,9 @@ class CascadesQueryOptimizer(QueryOptimizer):
             state.s.append(state.code)
         else:
             state.t.append(state.code)
+
+    def st_pth(self,state):
+        state.st.append(state.code)
 
     def recurse_pth(self, state):
         b1, b2 = splitBinary(state.code) 

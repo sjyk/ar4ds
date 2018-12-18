@@ -143,18 +143,16 @@ class DC(object):
         exceptions = set()
 
         if len(plan['s']) > 0:
-            print("Pushing down:\n\t",plan['s'])
+            print("->Pushing down:\t",plan['s'])
 
         if len(plan['t']) > 0:
-            print("Pushing down:\n\t", plan['t'])
-
-        if len(plan['pre']) > 0:
-            print("Implication Left Prune:\n\t", plan['pre'])
+            print("->Pushing down:\t", plan['t'])
 
         if len(plan['st']) > 0:
-            print("Hash Join on:\n\t", plan['st'])
+            print("\t->Hash Join on:\t", plan['st'])
+            print("\t\t->Filter:\t", self.rexp)
         else:
-            print("Nested Loop Join:\n\t", "S x T\n\t\t")
+            print("\t->Nested Loop Join:\t", self.rexp)
 
     def __str__(self):
         return self.rexp

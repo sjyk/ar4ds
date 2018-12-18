@@ -25,7 +25,13 @@ from ar4ds.opt.cascades import CascadesQueryOptimizer
 dc = compile(code, CascadesQueryOptimizer)
 print("Cascades finds push down optimizations: \n")
 dc.explainPlan(data)
+print("\n\n")
 
+#3. more complicated expression
+code = '''implies(conj(conj(eq(s.branch,'NY'), eq(t.branch,'SF')), eq(s.title, t.title)) , gt(s.salary, t.salary))'''
+dc = compile(code, CascadesQueryOptimizer)
+print("Cascades finds join type optimizations: \n")
+dc.explainPlan(data)
 
 
 
