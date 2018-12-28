@@ -3,7 +3,11 @@ This module defines the core language
 and logic api.
 '''
 from .dc import *
+<<<<<<< HEAD
 from .opt import *
+=======
+import json
+>>>>>>> 70bf6843c5857c8f74891d3db3d7da79b72fef16
 
 def compile(rule="True", pre="True"):
     return DC(eval('lambda s,t: ' + rule), \
@@ -18,11 +22,9 @@ def eq(s,t):
 def ne(s,t):
     return (s != t)
 
-def ge(s,t):
 def gt(s,t):
     return (s > t)
 
-def le(s,t):
 def lt(s,t):
     return (s < t)
 
@@ -90,12 +92,13 @@ def is_standard_form(dc):
                 break
             split_point += 1
         a,b = rule[7:split_point], rule[split_point+1:] # first and second half
+
         if "disj" in a or "xor" in a or "iff" in a or "implies" in a or "ne" in a or "ge" in a or "le" in a:
             return False
         cnt = b.count("eq") + b.count("ne") + b.count("ge") + b.count("le")
         if cnt != 1:
             return False
-    return True    return True
+    return True
 =======
             AssertionError("The argument " + str(arg) + " is not a boolean")
 

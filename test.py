@@ -1,28 +1,32 @@
 import pandas as pd
 from ar4ds.core import *
+from ar4ds.expl import *
 
-raw_data = [{'a': 'New York',     'b': 'NY'},
-            {'a': 'New York',      'b': 'NY'},
-            {'a': 'San Francisco', 'b': 'SF'},
-            {'a': 'San Francisco', 'b': 'SF'},
-            {'a': 'San Jose',      'b': 'SJ'},
-            {'a': 'New York',      'b': 'NY'},
-            {'a': 'San Francisco', 'b': 'SF0'},
-            {'a': 'Berkeley City', 'b': 'Bk'},
-            {'a': 'San Mateo',     'b': 'SM'},
-            {'a': 'Albany',        'b': 'AB'},
-            {'a': 'San Mateo',     'b': 'SM'}]
+raw_data = [{'title': 'Employee', 'id':1 , 'salary': 60.0}, 
+         {'title': 'Employee' , 'id':1, 'salary': 60.0},
+         {'title': 'Employee', 'id':1 , 'salary': 60.0},
+         {'title': 'Manager' , 'id':4,'salary': 100.0},
+         {'title': 'Manager', 'id':4 ,'salary': 500.0},
+         {'title': 'Manager', 'id':4 ,'salary': 90.0}]
 
-data = pd.DataFrame(raw_data, columns=['a','b'])
+data = pd.DataFrame(raw_data, columns=['title','id', 'salary'])
 
-dc = compile(rule="implies( eq(s.b, t.b), eq(s.a, t.a))", 
-             pre="eq(s.b, 'SFO')")
+#print(query(data, groupby=["title"], col="salary", withfn="mean"))
 
-print(dc[data]["always"])
+#dc = compile(rule="implies(conj(eq(s.title, 'Manager'), eq(t.title, 'Employee')), gt(s.salary, t.salary))")
 
+<<<<<<< HEAD
 print(is_standard_form(dc))
 
 
+=======
+#print(dc[data]["usually"])
+for rule, pre in whyeq(data,'title',0,1):
+    print(rule)
+    dc = compile(rule=rule, pre=pre)
+    print(dc[data]["usually"])
+>>>>>>> 70bf6843c5857c8f74891d3db3d7da79b72fef16
 
+#explain why
 
 
