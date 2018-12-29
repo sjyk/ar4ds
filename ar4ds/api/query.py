@@ -14,6 +14,7 @@ from ar4ds.opt import *
 from ar4ds.dc import *
 
 from .provenance import SchemaProvenance
+from .lang import *
 
 import pandas as pd
 from itertools import combinations
@@ -60,7 +61,7 @@ def compile(rule="True", optimizer=QueryOptimizer):
         output (ar4ds.dc.DC): A denial contstraint object
 
     """
-    return DC(rule, optimizer)
+    return DC(preprocess(rule), optimizer)
 
 
 def validateDC(prov, dc, modal=1.0):

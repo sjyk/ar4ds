@@ -23,7 +23,8 @@ print()
 from ar4ds.core import *
 
 #Write an assertion in our language:
-code = '''implies(conj(eq(s.branch,'NY'), eq(t.branch,'SF')), gt(s.salary, t.salary))'''
+code = '''implies(conj(eq(s.branch,'NY'), eq(t.branch,'SF')), 
+                  gt(s.salary, t.salary))'''
 #Being in the NY branch implies that your salary is higher.
 #Compile the code
 dc = compile(code)
