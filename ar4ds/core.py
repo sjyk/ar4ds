@@ -35,7 +35,9 @@ def lt(s,t):
     """Semantically equivalent to python's <"""
     return (s < t)
 
-
+def inr(r,s,t):
+    """r is in range of s and t left inclusive"""
+    return (r < t) and (r >= s)
 
 
 
