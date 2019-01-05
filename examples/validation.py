@@ -61,4 +61,6 @@ _, output, eval_dc = validateDC(prov, dc, "usually")
 exceptions = list(eval_dc.exceptions)
 print(output.iloc[exceptions, :])
 
+from ar4ds.learn.set_explanations import *
+print(restrict(output, exceptions, dc ,thresh=0.5, numerical=True))
 
